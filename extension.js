@@ -4,12 +4,12 @@ const vscode = require("vscode");
 
 function activate(context) {
     console.log('Congratulations, your extension "Pangu-Markdown" is now active!');
-	
+
     let format = vscode.commands.registerCommand('pangu.format', () => {
         new DocumentFormatter().updateDocument();
     });
     context.subscriptions.push(format);
-	context.subscriptions.push(new Watcher());
+    context.subscriptions.push(new Watcher());
 }
 exports.activate = activate;
 
@@ -32,16 +32,17 @@ class DocumentFormatter {
                 // 每行操作
                 content = content.split("\n").map((line) => {
                     line = this.replacePunctuations(line);
-                    line = line.replace(/([\u4e00-\u9fa5\u3040-\u30FF][*]*)([a-zA-Z0-9\[\(])/g, '$1 $2');
-                    line = line.replace(/([a-zA-Z0-9\]!;\,\.\:\?\)])([*]*[\u4e00-\u9fa5\u3040-\u30FF])/g, "$1 $2");
+                    // 加粗
+                    line = line.replace(/([\u4e00-\u9fa5\u3040-\u30FF])([*]*[a-zA-Z0-9\[\(])/g, '$1 $2');
+                    line = line.replace(/([a-zA-Z0-9\]!;\,\.\:\?\)][*]*)([\u4e00-\u9fa5\u3040-\u30FF])/g, "$1 $2");
+
+                    // 修正链接
                     line = line.replace(/\[([^\]]+)\][（(]([^)]+)[）)]/g, "[$1]($2)");
                     return line;
                 }).join("\n");
                 editorBuilder.replace(this.current_document_range(doc), content);
             });
-        }
-        else {
-        }
+        } else {}
     }
     current_document_range(doc) {
         let start = new vscode.Position(0, 0);
@@ -62,7 +63,7 @@ class DocumentFormatter {
         content = content.replace(/([\u4e00-\u9fa5\u3040-\u30FF])\?\s*/g, '$1？');
         content = content.replace(/([\u4e00-\u9fa5\u3040-\u30FF])\\\s*/g, '$1、');
         content = content.replace(/\(([\u4e00-\u9fa5\u3040-\u30FF])/g, '（$1');
-		content = content.replace(/([\u4e00-\u9fa5\u3040-\u30FF])\)/g, '$1）');
+        content = content.replace(/([\u4e00-\u9fa5\u3040-\u30FF])\)/g, '$1）');
         content = content.replace(/。\{3,}/g, '......');
         content = content.replace(/([！？])$1{3,}/g, '$1$1$1');
         content = content.replace(/([。，；：、“”『』〖〗《》])\1{1,}/g, '$1');
