@@ -32,9 +32,11 @@ class DocumentFormatter {
                 // 每行操作
                 content = content.split("\n").map((line) => {
                     line = this.replacePunctuations(line);
-                    // 加粗
+                    // 加粗/斜体
                     line = line.replace(/([\u4e00-\u9fa5\u3040-\u30FF])([*]*[a-zA-Z0-9\[\(])/g, '$1 $2');
                     line = line.replace(/([a-zA-Z0-9\]!;\,\.\:\?\)][*]*)([\u4e00-\u9fa5\u3040-\u30FF])/g, "$1 $2");
+                    line = line.replace(/([\u4e00-\u9fa5\u3040-\u30FF])([_]*[a-zA-Z0-9\[\(])/g, '$1 $2');
+                    line = line.replace(/([a-zA-Z0-9\]!;\,\.\:\?\)][_]*)([\u4e00-\u9fa5\u3040-\u30FF])/g, "$1 $2");
 
                     // 行内代码
                     line = line.replace(/([\u4e00-\u9fa5\u3040-\u30FF])(`[^`]*?`)/g, '$1 $2');
